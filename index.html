@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>FLOTTTTT Examples</title>
+    <link href="layout.css" rel="stylesheet" type="text/css">
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../excanvas.min.js"></script><![endif]-->
+    <script language="javascript" type="text/javascript" src="jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="jquery.flot.js"></script>
+    <script language="javascript" type="text/javascript" src="gaussianprocess.js"></script>
+    <script language="javascript" type="text/javascript" src="sylvester.js"></script>
+    <script language="javascript" type="text/javascript" src="gpr_test.js"></script>
+</head>
+<body>
+    <h1>Gaussian Processes!</h1>
+
+    <div id="placeholder" style="width:800px;height:800px;"></div>
+    <form>
+        Constant theta: <input type="text" id="constant"><br>
+        Linear theta: <input type="text" id="linear"><br>
+        Gaussian theta: <input type="text" id="gaussian"><br>
+        Exponential theta: <input type="text" id="exp_theta"><br>
+        Exponential width: <input type="text" id="exp_width"><br>
+        Matern theta: <input type="text" id="matern_theta"><br>
+        Matern width: <input type="text" id="matern_width"><br>
+        <button type="button" id="train">Maximize likelihood</button>
+    </form> 
+
+</script>
+
+</body>
+</html>
