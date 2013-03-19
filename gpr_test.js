@@ -52,7 +52,7 @@ $(function(){
 		if(isNaN(matern_theta)){
 			matern_theta = 1;
 		}
-		K.functions[3].parameters[0] = matern_theta;
+		K.functions[4].parameters[0] = matern_theta;
 		replot();
 	});
 	$('#matern_width').keyup(function(){
@@ -60,11 +60,11 @@ $(function(){
 		if(isNaN(matern_width)){
 			matern_width = 1;
 		}
-		K.functions[3].parameters[1] = matern_width;
+		K.functions[4].parameters[1] = matern_width;
 		replot();
 	});
 	$('#train').click(function(){
-		gradientDescent(f1,m1,K,0.1,0.01);
+		gradientDescent(f1,v_m1,K,0.1,0.01);
 		$('#constant').val(K.functions[0].parameters[0]);
 		$('#linear').val(K.functions[1].parameters[0]);
 		$('#gaussian').val(K.functions[2].parameters[0]);
@@ -100,6 +100,8 @@ for(var i = 0; i < m1.length; i++){
 		f.push(m1[i] * m1[i] * m1[i] + Math.random()*m1[i]*5);
 	}
 }
+var v_m1 = wrapScalarsAsVectors(m1);
+var v_m2 = wrapScalarsAsVectors(m2);
 f1 = $M(f);
 // var K = Kernels.kernelBuilder(Kernels.constant(constant_theta),
 // 	                          Kernels.linear(linear_theta),
@@ -117,8 +119,6 @@ function replot(){
 		                          // Kernels.linear(linear_theta),
 		                          // Kernels.gaussianNoise(gaussian_theta));
 	var GPR = GaussianProcess(K); 
-	var v_m1 = wrapScalarsAsVectors(m1);
-	var v_m2 = wrapScalarsAsVectors(m2);
 
     var result = GPR.train(v_m1,f1,v_m2);
 
