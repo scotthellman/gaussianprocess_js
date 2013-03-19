@@ -29,7 +29,7 @@ function gradientDescent(y,X,kernel,cutoff,gamma){
 	}
 }
 
-//TODO: butsted
+//TODO: doesn't work
 function d_likelihood(y,X,K,K_inv,kernel,function_index,param_index){
 	var result = K_inv.x(y);
 	result = result.x(result.transpose());
@@ -75,30 +75,31 @@ var Kernels = function(){
 	}
 
 	function linear(x,y){
-		return x*y;
+		return x.dot(y);
 	}
 
 	function gaussianNoise(x,y){
-		if(x == y){
+		if(x.eql(y)){
 			return 1;
 		}
 		return 0;
 	}
 
 	function squaredExponential(x,y,l){
-		var diff = x - y;
-		return Math.exp(-1 * (diff*diff/(l*l)));
+		var diff = x.subtract(y);
+		diff = diff.dot(diff);
+		return Math.exp(-1 * (diff/(l*l)));
 	}
 
 	//matern with nu=3/2
 	function matern(x,y,l){
-		var diff = Math.abs(x-y);
+		var diff = x.subtract(y);
+		diff = diff.dot(diff);
+		diff = Math.sqrt(diff);
 		var result = (1 + Math.sqrt(3) * diff / l);
 		result *= Math.exp(-1 * Math.sqrt(3) * diff/l);
 		return result;
 	}
-
-	console.log(matern(1,2,0.5));
 
 	function kernelBuilder(){
 		var functions = arguments;
@@ -114,7 +115,6 @@ var Kernels = function(){
 				return functions[func].gradients[parameter](x,y);
 			},
 
-			//how do you copy functions?
 			functions : functions
 		}
 	}
@@ -196,7 +196,6 @@ function GaussianProcess(kernel){
 
 	function eval(point){
 	}
-
 	
 
 	return{
@@ -204,3 +203,12 @@ function GaussianProcess(kernel){
 		eval:eval,
 	}
 }
+
+function wrapScalarsAsVectors(xs){
+	result = [];
+	for(var i = 0; i < xs.length; i++){
+		result.push(Vector.create([xs[i]]));
+	}
+	return result;
+}
+

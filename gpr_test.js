@@ -117,8 +117,10 @@ function replot(){
 		                          // Kernels.linear(linear_theta),
 		                          // Kernels.gaussianNoise(gaussian_theta));
 	var GPR = GaussianProcess(K); 
+	var v_m1 = wrapScalarsAsVectors(m1);
+	var v_m2 = wrapScalarsAsVectors(m2);
 
-    var result = GPR.train(m1,f1,m2);
+    var result = GPR.train(v_m1,f1,v_m2);
 
     var mu = result.mu;
     var sigma = result.sigma;
