@@ -1,4 +1,4 @@
-function gradientDescent(y,X,kernel,cutoff,gamma){
+function gradientDescent(y,X,kernel,cutoff,gamma,max_iterations){
 	var delta = null;
 	var max_delta = 10;
 	var current = [];
@@ -12,7 +12,7 @@ function gradientDescent(y,X,kernel,cutoff,gamma){
 		}
 	}
 	var iterations = 0;
-	while(max_delta > cutoff && iterations < 50){
+	while(max_delta > cutoff && iterations < max_iterations){
 		max_delta = 0;
 		iterations++;
 		var K = applyKernel(X,X,kernel);

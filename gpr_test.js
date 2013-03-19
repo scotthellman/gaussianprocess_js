@@ -64,7 +64,7 @@ $(function(){
 		replot();
 	});
 	$('#train').click(function(){
-		gradientDescent(f1,v_m1,K,0.1,0.01);
+		gradientDescent(f1,v_m1,K,0.1,0.01,50);
 		$('#constant').val(K.functions[0].parameters[0]);
 		$('#linear').val(K.functions[1].parameters[0]);
 		$('#gaussian').val(K.functions[2].parameters[0]);
