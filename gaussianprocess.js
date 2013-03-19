@@ -151,7 +151,9 @@ var Kernels = function(){
 				kernel : function(x,y){return parameters[0] * squaredExponential(x,y,parameters[1]);},
 				gradients : [function(x,y){return squaredExponential(x,y,parameters[1])},
 				             function(x,y){
-				             	var result = -1 * Math.pow(x-y,2) * parameters[0] * squaredExponential(x,y,parameters[1])/Math.pow(parameters[1],3)
+				             	var diff = x.subtract(y);
+				             	diff = diff.dot(diff);
+				             	var result = -1 * diff * parameters[0] * squaredExponential(x,y,parameters[1])/Math.pow(parameters[1],3)
 				             	return result;
 				             }],
 				parameters : parameters
@@ -163,7 +165,9 @@ var Kernels = function(){
 				kernel : function(x,y){return parameters[0] * matern(x,y,parameters[1]);},
 				gradients : [function(x,y){return matern(x,y,parameters[1])},
 				             function(x,y){
-				             	var diff = Math.abs(x - y);
+				             	var diff = x.subtract(y);
+				             	diff = diff.dot(diff);
+				             	diff = Math.sqrt(diff);
 				             	var result = 3 * parameters[0] * diff * diff;
 				             	result *= Math.exp(-Math.sqrt(3) * diff / parameters[1]);
 				             	result /= Math.pow(parameters[1],3);
