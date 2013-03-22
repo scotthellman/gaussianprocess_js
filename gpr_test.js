@@ -64,7 +64,8 @@ $(function(){
 		replot();
 	});
 	$('#train').click(function(){
-		gradientDescent(f1,v_m1,K,0.1,0.005,20);
+		GPR.gradientDescent(f1,v_m1,0.1,0.005,20);
+		var K = GPR.kernel;
 		$('#constant').val(K.functions[0].parameters[0]);
 		$('#linear').val(K.functions[1].parameters[0]);
 		$('#gaussian').val(K.functions[2].parameters[0]);
@@ -114,13 +115,12 @@ var K = Kernels.kernelBuilder(Kernels.constant(constant_theta),
 	                          Kernels.matern(matern_theta,matern_width));
 // var K = Kernels.kernelBuilder(Kernels.gaussianNoise(gaussian_theta),
 // 	                          Kernels.squaredExponential(exp_theta,exp_width));
+var GPR = GaussianProcess(K); 
 function replot(){
 	// var K = Kernels.kernelBuilder(Kernels.constant(constant_theta),
 		                          // Kernels.linear(linear_theta),
 		                          // Kernels.gaussianNoise(gaussian_theta));
-	var GPR = GaussianProcess(K); 
-
-    var result = GPR.train(v_m1,f1,v_m2);
+    var result = GPR.evaluate(v_m1,f1,v_m2);
 
     var mu = result.mu;
     var sigma = result.sigma;

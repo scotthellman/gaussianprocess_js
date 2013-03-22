@@ -1,73 +1,3 @@
-function gradientDescent(y,X,kernel,cutoff,gamma,max_iterations){
-	var delta = null;
-	var max_delta = 10;
-	var current = [];
-	var function_indices = [];
-	var parameter_indices = [];
-	for(var i = 0; i < kernel.functions.length; i++){
-		for(var j = 0; j < kernel.functions[i].gradients.length; j++){
-			function_indices.push(i);
-			parameter_indices.push(j);
-			current.push(kernel.functions[i].parameters[j])
-		}
-	}
-	var iterations = 0;
-	while(max_delta > cutoff && iterations < max_iterations){
-		max_delta = 0;
-		iterations++;
-		var K = applyKernel(X,X,kernel);
-		var K_inv = K.inv();
-		for(var i = 0; i < current.length; i++){
-			delta = d_likelihood_slow(y,X,K,K_inv,kernel,function_indices[i],parameter_indices[i]);
-			max_delta = Math.max(Math.abs(delta),max_delta);
-			var old = current[i];
-			current[i] -= delta * gamma;
-		}
-		for(var i = 0; i < current.length; i++){
-			kernel.functions[function_indices[i]].parameters[parameter_indices[i]] = current[i];
-		}
-	}
-}
-
-//TODO: doesn't work
-function d_likelihood(y,X,K,K_inv,kernel,function_index,param_index){
-	var result = K_inv.x(y);
-	result = result.x(result.transpose());
-	result = result.subtract(K_inv);
-	result = result.x(applyKernelGradient(X,X,kernel,function_index,param_index));
-	return 0.5 * result.trace();
-}
-
-function d_likelihood_slow(y,X,K,K_inv,kernel,function_index,param_index){
-	var d_K = applyKernelGradient(X,X,kernel,function_index,param_index);
-	var result = y.transpose().x(K_inv).x(d_K).x(K_inv).x(y).e(0,0);
-	var penalty = K_inv.x(d_K).trace();
-	result = 0.5 * (result - penalty);
-	return result
-}
-
-function applyKernel(X,Y,kernel){
-	var result_array = []
-	for(var i = 0; i < X.length; i++){
-		result_array.push([]);
-		for(var j = 0; j < Y.length; j++){
-			result_array[i].push(kernel.kernel(X[i],Y[j]));
-		}
-	}
-	return $M(result_array);
-}
-
-function applyKernelGradient(X,Y,kernel,function_index,param_index){
-	var result_array = []
-	for(var i = 0; i < X.length; i++){
-		result_array.push([]);
-		for(var j = 0; j < Y.length; j++){
-			result_array[i].push(kernel.gradient(X[i],Y[j],function_index,param_index));
-		}
-	}
-	return $M(result_array);
-}
-
 var Kernels = function(){
 
 	function constant(x,y){
@@ -181,7 +111,7 @@ var Kernels = function(){
 }();
 
 function GaussianProcess(kernel){
-	function train(training_data,training_labels,testing_data){
+	function evaluate(training_data,training_labels,testing_data){
 		//build covariance matrix components
 		var C = applyKernel(training_data,training_data,kernel);
 		var k = applyKernel(training_data,testing_data,kernel);
@@ -198,13 +128,83 @@ function GaussianProcess(kernel){
 		}
 	}
 
-	function eval(point){
+	function gradientDescent(y,X,cutoff,gamma,max_iterations){
+		var delta = null;
+		var max_delta = 10;
+		var current = [];
+
+		//get our gradient indexing figured out
+		var function_indices = [];
+		var parameter_indices = [];
+		for(var i = 0; i < kernel.functions.length; i++){
+			for(var j = 0; j < kernel.functions[i].gradients.length; j++){
+				function_indices.push(i);
+				parameter_indices.push(j);
+				current.push(kernel.functions[i].parameters[j])
+			}
+		}
+
+		var iterations = 0;
+		while(max_delta > cutoff && iterations < max_iterations){
+			max_delta = 0;
+			iterations++;
+			var K = applyKernel(X,X,kernel);
+			var K_inv = K.inv();
+			for(var i = 0; i < current.length; i++){
+				delta = d_likelihood_slow(y,X,K,K_inv,kernel,function_indices[i],parameter_indices[i]);
+				max_delta = Math.max(Math.abs(delta),max_delta);
+				var old = current[i];
+				current[i] -= delta * gamma;
+			}
+			for(var i = 0; i < current.length; i++){
+				kernel.functions[function_indices[i]].parameters[parameter_indices[i]] = current[i];
+			}
+		}
 	}
-	
+
+	//TODO: doesn't work
+	function d_likelihood(y,X,K,K_inv,kernel,function_index,param_index){
+		var result = K_inv.x(y);
+		result = result.x(result.transpose());
+		result = result.subtract(K_inv);
+		result = result.x(applyKernelGradient(X,X,kernel,function_index,param_index));
+		return 0.5 * result.trace();
+	}
+
+	function d_likelihood_slow(y,X,K,K_inv,kernel,function_index,param_index){
+		var d_K = applyKernelGradient(X,X,kernel,function_index,param_index);
+		var result = y.transpose().x(K_inv).x(d_K).x(K_inv).x(y).e(0,0);
+		var penalty = K_inv.x(d_K).trace();
+		result = 0.5 * (result - penalty);
+		return result
+	}
+
+	function applyKernel(X,Y,kernel){
+		var result_array = []
+		for(var i = 0; i < X.length; i++){
+			result_array.push([]);
+			for(var j = 0; j < Y.length; j++){
+				result_array[i].push(kernel.kernel(X[i],Y[j]));
+			}
+		}
+		return $M(result_array);
+	}
+
+	function applyKernelGradient(X,Y,kernel,function_index,param_index){
+		var result_array = []
+		for(var i = 0; i < X.length; i++){
+			result_array.push([]);
+			for(var j = 0; j < Y.length; j++){
+				result_array[i].push(kernel.gradient(X[i],Y[j],function_index,param_index));
+			}
+		}
+		return $M(result_array);
+	}
 
 	return{
-		train:train,
-		eval:eval,
+		evaluate:evaluate,
+		gradientDescent:gradientDescent,
+		kernel:kernel
 	}
 }
 
