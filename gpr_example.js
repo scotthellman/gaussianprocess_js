@@ -104,22 +104,13 @@ for(var i = 0; i < m1.length; i++){
 var v_m1 = wrapScalarsAsVectors(m1);
 var v_m2 = wrapScalarsAsVectors(m2);
 f1 = $M(f);
-// var K = Kernels.kernelBuilder(Kernels.constant(constant_theta),
-// 	                          Kernels.linear(linear_theta),
-// 	                          Kernels.gaussianNoise(gaussian_theta),
-// 	                          Kernels.squaredExponential(exp_theta,exp_width));
 var K = Kernels.kernelBuilder(Kernels.constant(constant_theta),
 	                          Kernels.linear(linear_theta),
 	                          Kernels.gaussianNoise(gaussian_theta),
  	                          Kernels.squaredExponential(exp_theta,exp_width),
 	                          Kernels.matern(matern_theta,matern_width));
-// var K = Kernels.kernelBuilder(Kernels.gaussianNoise(gaussian_theta),
-// 	                          Kernels.squaredExponential(exp_theta,exp_width));
 var GPR = GaussianProcess(K); 
 function replot(){
-	// var K = Kernels.kernelBuilder(Kernels.constant(constant_theta),
-		                          // Kernels.linear(linear_theta),
-		                          // Kernels.gaussianNoise(gaussian_theta));
     var result = GPR.evaluate(v_m1,f1,v_m2);
 
     var mu = result.mu;
