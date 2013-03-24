@@ -1,6 +1,8 @@
 (function(){
+	var tolerance;
 	module('Gaussian Process Regression Tests', {
 		setup: function() {
+			tolerance = 0.000001;
 		},
 		teardown: function() {
 		}
@@ -35,4 +37,34 @@
 		var linear = Kernels.linear(1);
 		equal(linear.kernel($V([2]),$V([3])),6);
 	});
+
+	test( "linear test output correct in higher dimensions ", function(){
+		var linear = Kernels.linear(1);
+		var expected = 2*3 + 4*-3;
+		ok(Math.abs(linear.kernel($V([2,4]),$V([3,-3])) - expected) < tolerance);
+	});
+
+	test( "linear test output scales with theta", function(){
+		var linear = Kernels.linear(-2);
+		var expected = 2*3 + 4*-3;
+		expected *= -2
+		ok(Math.abs(linear.kernel($V([2,4]),$V([3,-3])) - expected) < tolerance);
+	});
+
+	test( "linear test output handles 0 theta", function(){
+		var linear = Kernels.linear(0);
+		equal(linear.kernel($V([2,4]),$V([3,-3])), 0);
+	});
+
+	test( "linear gradient correctness ", function(){
+		var linear = Kernels.linear(4);
+		equal(linear.gradients[0]($V([2]),$V([3])),6);
+	});
+
+	test( "linear gradient multivariate correctness ", function(){
+		var linear = Kernels.linear(-1);
+		equal(linear.gradients[0]($V([-1,2]),$V([0,3])),6);
+	});
+
+
 })();
