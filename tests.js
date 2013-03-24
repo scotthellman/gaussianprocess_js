@@ -66,5 +66,29 @@
 		equal(linear.gradients[0]($V([-1,2]),$V([0,3])),6);
 	});
 
+	test( "gaussian is constant on diagonal" , function(){
+		var gauss = Kernels.gaussianNoise(1);
+		equal(gauss.kernel($V([0]),$V([0])), gauss.kernel($V([4]),$V([4])));
+	});
+
+	test( "gaussian is constant on diagonal multivariate" , function(){
+		var gauss = Kernels.gaussianNoise(1);
+		equal(gauss.kernel($V([0,4]),$V([0,4])), gauss.kernel($V([20,-2]),$V([20,-2])));
+	});
+
+	test( "gaussian is 0 on off-diagonal" , function(){
+		var gauss = Kernels.gaussianNoise(1);
+		equal(gauss.kernel($V([0]),$V([1])), 0);
+	});
+
+	test( "gaussian is 0 on off-diagonal multivariate" , function(){
+		var gauss = Kernels.gaussianNoise(1);
+		equal(gauss.kernel($V([0,20]),$V([1,21])), 0);
+	});
+
+	test( "gaussian scales with theta" , function(){
+		var gauss = Kernels.gaussianNoise(5);
+		equal(gauss.kernel($V([4,4]),$V([4,4])), 5);
+	});
 
 })();
