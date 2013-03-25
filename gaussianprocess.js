@@ -71,7 +71,8 @@ var Kernels = function(){
 			var parameters = [theta];
 			return{
 				kernel : function(x,y){return parameters[0] * gaussianNoise(x,y);},
-				gradients : [], //not differentiable
+				gradients : [], //function of our prior knowledge?
+				// gradients : [function(x,y){return gaussianNoise(x,y);}],
 				parameters : parameters
 			}
 		},
@@ -83,7 +84,7 @@ var Kernels = function(){
 				             function(x,y){
 				             	var diff = x.subtract(y);
 				             	diff = diff.dot(diff);
-				             	var result = -1 * diff * parameters[0] * squaredExponential(x,y,parameters[1])/Math.pow(parameters[1],3)
+				             	var result = -2 * diff * parameters[0] * squaredExponential(x,y,parameters[1])/Math.pow(parameters[1],3)
 				             	return result;
 				             }],
 				parameters : parameters
