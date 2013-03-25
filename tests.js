@@ -96,4 +96,40 @@
 		deepEqual(gauss.gradients,[]);
 	});
 
+	test( "squared exponential correctness ", function(){
+		var exp = Kernels.squaredExponential(1,-0.5);
+		expected = Math.exp(-16);
+		ok(Math.abs(exp.kernel($V([1]),$V([3])) - expected) < tolerance);
+	});
+
+	test( "squared exponential correctness multivariate ", function(){
+		var exp = Kernels.squaredExponential(1,-0.5);
+		expected = Math.exp(-52);
+		ok(Math.abs(exp.kernel($V([1,2]),$V([3,-1])) - expected) < tolerance);
+	});
+
+	test( "squared exponential scales with theta ", function(){
+		var exp = Kernels.squaredExponential(3,-0.5);
+		expected = 3 * Math.exp(-52);
+		ok(Math.abs(exp.kernel($V([1,2]),$V([3,-1])) - expected) < tolerance);
+	});
+
+	test( "squared exponential scales with width ", function(){
+		var exp = Kernels.squaredExponential(1,-0.25);
+		expected = Math.exp(-104);
+		ok(Math.abs(exp.kernel($V([1,2]),$V([3,-1])) - expected) < tolerance);
+	});
+
+	test( "squared exponential d_theta correct", function(){
+		var exp = Kernels.squaredExponential(3,-0.5);
+		expected = Math.exp(-52);
+		ok(Math.abs(exp.gradients[0]($V([1,2]),$V([3,-1])) - expected) < tolerance);
+	});
+
+	test( "squared exponential d_width correct", function(){
+		var exp = Kernels.squaredExponential(3,-2);
+		expected = 1.07439299;
+		ok(Math.abs(exp.gradients[1]($V([1,2]),$V([3,1])) - expected) < tolerance);
+	});
+
 })();
