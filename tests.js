@@ -132,4 +132,40 @@
 		ok(Math.abs(exp.gradients[1]($V([1,2]),$V([3,1])) - expected) < tolerance);
 	});
 
+	test( "matern correctness", function(){
+		var matern = Kernels.matern(1,0.5);
+		expected = (1 + Math.sqrt(3)*2/0.5) * Math.exp(-1 * Math.sqrt(3)*2/0.5);
+		ok(Math.abs(matern.kernel($V([3]),$V([5])) - expected) < tolerance);
+	});
+
+	test( "matern correctness multivariate", function(){
+		var matern = Kernels.matern(1,0.5);
+		expected = (1 + Math.sqrt(3)*5/0.5) * Math.exp(-1 * Math.sqrt(3)*5/0.5);
+		ok(Math.abs(matern.kernel($V([3,2]),$V([6,6])) - expected) < tolerance);
+	});
+
+	test( "matern scales with theta", function(){
+		var matern = Kernels.matern(5,0.5);
+		expected = 5*(1 + Math.sqrt(3)*5/0.5) * Math.exp(-1 * Math.sqrt(3)*5/0.5);
+		ok(Math.abs(matern.kernel($V([3,2]),$V([6,6])) - expected) < tolerance);
+	});
+
+	test( "matern scales with width", function(){
+		var matern = Kernels.matern(1,0.75);
+		expected = (1 + Math.sqrt(3)*5/0.75) * Math.exp(-1 * Math.sqrt(3)*5/0.75);
+		ok(Math.abs(matern.kernel($V([3,2]),$V([6,6])) - expected) < tolerance);
+	});
+
+	test( "matern d_theta correcness", function(){
+		var matern = Kernels.matern(5,0.5);
+		expected = (1 + Math.sqrt(3)*5/0.5) * Math.exp(-1 * Math.sqrt(3)*5/0.5);
+		ok(Math.abs(matern.gradients[0]($V([3,2]),$V([6,6])) - expected) < tolerance);
+	});
+
+	test( "matern d_width correcness", function(){
+		var matern = Kernels.matern(5,0.75);
+		expected = 0.0085916;
+		ok(Math.abs(matern.gradients[1]($V([3,2]),$V([6,6])) - expected) < tolerance);
+	});
+
 })();
